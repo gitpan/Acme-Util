@@ -1,0 +1,9 @@
+Add writer() and appender() to complement reader()
+
+Remove xmlparse() (if possible)
+
+clone():
+    Fix Regex segfault
+    Add support for UTF-8 hash keys and restricted hashes
+
+More tests

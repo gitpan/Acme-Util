@@ -1,0 +1,47 @@
+Acme::Util version 0.08
+==================
+
+Acme::Util - Frequently Hacked Functions
+
+Acme::Util is a cookbook of tasty functions for the terminally
+lazy, impatient and hubristic.
+
+It features XS versions of such FAQ-fare as clone() and isnum() (including
+isint(), isfloat() &c), as well as pure perl implementations of 
+timewasters such as swap(), trim(), readfile(), writefile() and appendfile().
+Throughout, the emphasis is on best practices and high performance.
+
+See the POD for more info.
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This module has the following dependencies:
+
+  Test::More
+  Test::Deep
+  Math::Complex
+
+  In addition, due to limited support for weak references in older
+  versions, clone() only copies these correctly with Perl(s) >= 5.8.0
+
+  The numerical functions (isnum() and its offspring) along with some of
+  the tests thereof have proved unreliable on pre-5.8.0 perls as well.
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2000-2003 chocolateboy <chocolate.boy@email.com>
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+http://www.gnu.org/copyleft/gpl.html
+http://www.perl.com/language/misc/Artistic.html
