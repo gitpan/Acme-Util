@@ -25,7 +25,7 @@ our %EXPORT_TAGS = (
 
 our @EXPORT_OK = ( map { @$_ } values %EXPORT_TAGS );
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 bootstrap Acme::Util $VERSION;
 

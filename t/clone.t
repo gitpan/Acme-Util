@@ -77,7 +77,7 @@ sub TIEHANDLE {
 use strict;
 use warnings;
 # use Data::Dumper;
-use Test::More tests => 32;
+use Test::More tests => 34;
 use Test::Deep;
 use vars qw($DEBUG);
 
@@ -104,11 +104,15 @@ SKIP: {
     $v1->{a} = $v1;
 
     weaken ($v1->{a});
-
     my $v2 = clone($v1);
 
     ok (isweak ($v1->{a}), 'original weakref');
     ok (isweak ($v2->{a}), 'cloned weakref');
+    cmp_deeply($v1, $v2, 'cloned weakref - same contents');
+
+    my $multi_weak = [ $v1, $v1, $v2, $v2 ];
+    my $multi_weak_clone = clone($multi_weak);
+    cmp_deeply($multi_weak, $multi_weak_clone, 'cloned weakrefs - same contents');
 
     my $node1 = Acme::Util::Test::Node->new(1);
     my $node2 = Acme::Util::Test::Node->new(2);

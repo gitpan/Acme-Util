@@ -1,11 +1,16 @@
 Revision history for Perl extension Acme::Util.
 
+0.09  Fri Nov 21 17:45:35 2003
+    - added squash() to tags list
+    - removed <assert.h> include from Util.xs
+    - refixed weakref refcount bug
+
 0.08  Fri Nov 21 14:40:18 2003
 
     - Renamed Acme::Util          
     - Fixed refcount bug in weakref cloning exposed by
-    perl-5.8.2 
-    - doc tweak for isnum
+    perl-5.8.1 
+    - fixlet and doc tweak for isnum
 
 0.07  Thu Sep 18 12:11:33 2003
 

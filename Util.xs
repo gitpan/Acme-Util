@@ -1,7 +1,6 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-#include <assert.h>
 
 #ifdef UTIL_DEBUG
 #include "debug.h"
@@ -261,7 +260,7 @@ typedef enum {
 
 	if (clone_handler && (weakref = mg_find(original, PERL_MAGIC_backref))) {
 	    clone_handler(original, clone); /* weak referent */
-	    /* recount special-casing is (i.e. has already been) handled in the REFERENCE section below */
+	    /* refcount special-casing is (i.e. has already been) handled in the REFERENCE section below */
 	    /* SvREFCNT_dec(clone); */
 	}
 #endif
@@ -273,10 +272,11 @@ typedef enum {
 	     */
 #ifdef PERL_MAGIC_backref
 	    if (mg == weakref) { 
-                /* backref AV refcount is fixed at 2 */
-		cloned = clone_value(mg->mg_obj, 1); /* force caching */
+            cloned = clone_value(mg->mg_obj, 1); /* force caching */
+            /* backref AV refcount is fixed at 1 pre 5.8.1 and 2 post 5.8.2 */
+            SvREFCNT(cloned) = SvREFCNT(mg->mg_obj);
 	    } else {
-		cloned = clone_value(mg->mg_obj, 0);
+            cloned = clone_value(mg->mg_obj, 0);
 	    }
 #else
 	    cloned = clone_value(mg->mg_obj, 0);
