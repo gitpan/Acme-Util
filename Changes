@@ -1,5 +1,8 @@
 Revision history for Perl extension Acme::Util.
 
+0.11  Thu Sep 16 20:53:14 2004
+    - fixed clone.t
+
 0.10  Tue Dec 23 13:30:50 2003
     - broke Scope::Guard out into its own module
 

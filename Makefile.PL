@@ -9,9 +9,9 @@ WriteMakefile(
     'VERSION_FROM'    =>    'lib/Acme/Util.pm',     # finds $VERSION
     'INSTALLDIRS'     =>    'perl',
     'PREREQ_PM'       =>    { # e.g. Module::Name => 1.1
-        'Test::More'      => 0,
-        'Test::Deep'      => 0,
-        'Math::Complex'   => 0    # for Inf / infinity
+        'Data::Dumper'	=> 2.121,
+        'Test::More'	=> 0,
+        'Math::Complex'	=> 0    # for Inf / infinity
     },         
     'LIBS'            =>    [''],         # e.g. '-lm'
     # 'DEFINE'        =>    '-DUTIL_DEBUG',

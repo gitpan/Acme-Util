@@ -26,7 +26,7 @@ our %EXPORT_TAGS = (
 
 our @EXPORT_OK = ( map { @$_ } values %EXPORT_TAGS );
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 bootstrap Acme::Util $VERSION;
 
@@ -1497,7 +1497,7 @@ chocolateboy: <chocolate.boy@email.com>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001-2003, chocolateboy.
+Copyright (c) 2001-2004, chocolateboy.
 
 This module is free software. It may be used, redistributed
 and/or modified under the same terms as Perl itself.

@@ -1,12 +1,12 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Acme-Util
-version:      0.10
+version:      0.11
 version_from: lib/Acme/Util.pm
 installdirs:  perl
 requires:
+    Data::Dumper:                  2.121
     Math::Complex:                 0
-    Test::Deep:                    0
     Test::More:                    0
 
 distribution_type: module

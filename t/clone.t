@@ -76,19 +76,28 @@ sub TIEHANDLE {
 
 use strict;
 use warnings;
-# use Data::Dumper;
+use Data::Dumper;
+
 use Test::More tests => 34;
-use Test::Deep;
-use vars qw($DEBUG);
 
 # require 'debug.pl';
-
-$| = $DEBUG = 1;
 
 BEGIN {
     chdir 't' if (-d 't');
     unshift @INC, qw(../lib ../blib/lib);
     use_ok('Acme::Util', qw(clone)); # 1
+}
+
+# Test::Deep's cache transforms the values it compares - in particular
+# it winds up leaving null pointers in the magical backref AV of weak referents,
+# which in turn causes clone_array() - which shouldn't have to check for such
+# anomalies - to segfault. Although Sortkeys is a relatively recent Data::Dumper coinage
+# we're safe as Perl 5.8+ is required by the Makefile.
+
+sub is_deep ($$;$) {
+	my ($got, $want, $msg) = @_;
+	local $Data::Dumper::Sortkeys = $Data::Dumper::Terse = $Data::Dumper::Indent = 1;
+	return is(Dumper($got), Dumper($want), $msg);
 }
 
 SKIP: {
@@ -108,11 +117,11 @@ SKIP: {
 
     ok (isweak ($v1->{a}), 'original weakref');
     ok (isweak ($v2->{a}), 'cloned weakref');
-    cmp_deeply($v1, $v2, 'cloned weakref - same contents');
+    is_deep($v1, $v2, 'cloned weakref - same contents');
 
     my $multi_weak = [ $v1, $v1, $v2, $v2 ];
     my $multi_weak_clone = clone($multi_weak);
-    cmp_deeply($multi_weak, $multi_weak_clone, 'cloned weakrefs - same contents');
+    is_deep($multi_weak, $multi_weak_clone, 'cloned weakrefs - same contents');
 
     my $node1 = Acme::Util::Test::Node->new(1);
     my $node2 = Acme::Util::Test::Node->new(2);
@@ -123,12 +132,8 @@ SKIP: {
 
     my $node4 = clone($node1);
 
-    # is_deeply goes into infinite recursion with circular references :-(
-    # local $Data::Dumper::Sortkeys = 1;
     isnt ($node4, $node1, 'cloned node: different refs');
-    # is (Dumper ($node4), Dumper($node1), 'cloned node: same data');
-    # See Test::Deep note below 
-    cmp_deeply($node4, $node1, 'cloned node: same data');
+    is_deep($node4, $node1, 'cloned node: same data');
 
     isnt ($node4->{CHILDREN}, $node1->{CHILDREN}, 'cloned node children: different refs');
     # the by-name index of child nodes is tested because that's the
@@ -213,15 +218,7 @@ my $all_clone2 = clone($all);
 
 isnt ($all, $all_clone2, 'compound self-referential data structure: different refs');
 
-# Not available in perl 5.6.1's Data::Dumper
-# So this workaround for is_deeply's inability to handle circular
-# references (infinite recursion!) won't fly
-# Forced to use Test::Deep until this patch is applied: 
-# http://archive.develooper.com/perl-qa@perl.org/msg01839.html
-# local $Data::Dumper::Sortkeys = 1;
-# is (Dumper($all), Dumper($all_clone2),
-# 	'compound self-referential data structure: same values');
-cmp_deeply($all_clone2, $all,
+is_deep($all_clone2, $all,
     'compound self-referential data structure: same values');
 delete $all->{SELF};
 	    

@@ -1,4 +1,4 @@
-Acme::Util version 0.10
+Acme::Util version 0.11
 =======================
 
 Acme::Util - Frequently Hacked Functions
@@ -27,7 +27,6 @@ DEPENDENCIES
 This module has the following dependencies:
 
   Test::More
-  Test::Deep
   Math::Complex
 
   In addition, due to limited support for weak references in older
@@ -38,7 +37,7 @@ This module has the following dependencies:
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2000-2003 chocolateboy <chocolate.boy@email.com>
+Copyright (C) 2000-2004 chocolateboy <chocolate.boy@email.com>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
