@@ -1,5 +1,8 @@
 Revision history for Perl extension Acme::Util.
 
+0.10  Tue Dec 23 13:30:50 2003
+    - broke Scope::Guard out into its own module
+
 0.09  Fri Nov 21 17:45:35 2003
     - added squash() to tags list
     - removed <assert.h> include from Util.xs

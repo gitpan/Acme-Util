@@ -273,7 +273,8 @@ typedef enum {
 #ifdef PERL_MAGIC_backref
 	    if (mg == weakref) { 
             cloned = clone_value(mg->mg_obj, 1); /* force caching */
-            /* backref AV refcount is fixed at 1 pre 5.8.1 and 2 post 5.8.2 */
+            /* backref AV refcount is fixed at 1 pre 5.8.1 and 2 thereafter */
+            /* FIXME: why isn't the original's refcount inc'd by CLONE_STORE()? */
             SvREFCNT(cloned) = SvREFCNT(mg->mg_obj);
 	    } else {
             cloned = clone_value(mg->mg_obj, 0);

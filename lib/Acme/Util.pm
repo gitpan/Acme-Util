@@ -7,6 +7,7 @@ use Errno;
 use Carp qw(carp confess croak);
 use POSIX qw(floor);
 use Fcntl ':flock'; # LOCK_SH, LOCK_EX, LOCK_UN
+use Scope::Guard; # (for reader)
 
 require Exporter;
 require DynaLoader;
@@ -25,7 +26,7 @@ our %EXPORT_TAGS = (
 
 our @EXPORT_OK = ( map { @$_ } values %EXPORT_TAGS );
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 bootstrap Acme::Util $VERSION;
 
@@ -1017,7 +1018,7 @@ sub reader ($;%) {
     }
 
     # wait until $handle is a filehandle before we guard it
-    $sg->guard($handle, \&myclose);
+    $sg->guard(\&myclose, $handle);
 
     unless (flock($handle, LOCK_SH)) {
 	close $handle;
@@ -1474,6 +1475,14 @@ sub xmlparse ($$) {
     croak ("can't find file: $xml: $!") unless ($parsed);
 }
 
+# Used as an auxiliary filehandle destructor by reader()
+# FIXME: could inherit warner to flag any close() problems
+
+sub myclose {
+    my $handle = shift;
+    close $handle;
+}
+
 =head1 BUGS
 
 clone() currently segfaults if it encounters a Regex object
@@ -1494,100 +1503,3 @@ This module is free software. It may be used, redistributed
 and/or modified under the same terms as Perl itself.
 
 =cut
-
-# Used as an auxiliary filehandle destructor by reader()
-# FIXME: could inherit warner to flag any close() problems
-
-sub myclose {
-    my $handle = shift;
-    close $handle;
-}
-
-package Scope::Guard;
-
-# DESCRIPTION
-#
-#    Confer lexical semantics on an arbitrary resource
-#
-# METHODS
-#
-#    new
-#
-# usage
-#
-#    my $sg = Scope::Guard->new();
-#
-# description
-#
-#    Creates a new ScopeGuard object. ScopeGuard provides resource
-#    management for a non-lexically-scoped variable
-#    by wrapping that variable in a lexical whose destructor then
-#    manages the bound resource.
-#
-#    Thus the lifetime of a non-lexical resource can be made
-#    commensurate with that of a blessed lexical.
-#
-#    In other words, a resource that's messy, painful or
-#    inconvenient to close/free/cleanup can be 'automagically' managed
-#    as painlessly as any temporary. Forget about it, let it go out of
-#    scope, or set it to undef and resource
-#    management kicks in via the ScopeGuard destructor (DESTROY, of course)
-#    which feeds its second member (handler) its first member (resource).
-#
-#    In addition to this resource management functionality,
-#    the ScopeGuard pointer value (as an integer) is used to
-#    create a unique filehandle *name* within Acme::Util::reader()
-#    (called by Acme::Util::readfile). In practice, any lexical reference
-#    could have been used to provide a safe filehandle name.
-#    The ScopeGuard object just happened to be the most convenient
-#    lexical at our disposal.
-#
-#    For more information on ScopeGuard, vide:
-#
-#	http://www.cuj.com/experts/1812/alexandr.htm?topic=experts
-#
-
-sub new {
-    my ($class, $resource, $handler) = @_;
-    my $self = [ $resource, $handler ];
-    bless $self, ref $class || $class;
-}
-
-# guard
-#
-# usage
-#
-#    $sg->guard($resource, $handler);
-#
-# description
-#
-#    Initialize a ScopeGuard object with the resource it should
-#    manage and the handler that should be called to implement
-#    that management when the ScopeGuard object's destructor is called.
-#
-
-sub guard {
-    my $self = shift;
-    @$self = @_;
-}
-
-# DESTROY
-#
-# usage
-#
-#    $sg->DESTROY();
-#
-# description
-#
-#    Not called directly. The destructor is a thin wrapper around
-#    the invocation of the handler on the resource
-#
-
-sub DESTROY {
-    my $self = shift;
-    my ($resource, $handler) = @$self;
-    # print "destroying $resource", $/;
-    $handler->($resource);
-}
-
-1;
